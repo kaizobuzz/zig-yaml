@@ -357,7 +357,7 @@ pub const Yaml = struct {
 
     pub fn parse(self: *Yaml, comptime T: type) Error!T {
         if (self.docs.items.len == 0) {
-            if (@typeInfo(T) == .void) return {};
+            if (@typeInfo(T) == .Void) return {};
             return error.TypeMismatch;
         }
 
@@ -366,14 +366,14 @@ pub const Yaml = struct {
         }
 
         switch (@typeInfo(T)) {
-            .array => |info| {
+            .Array => |info| {
                 var parsed: T = undefined;
                 for (self.docs.items, 0..) |doc, i| {
                     parsed[i] = try self.parseValue(info.child, doc);
                 }
                 return parsed;
             },
-            .pointer => |info| {
+            .Pointer => |info| {
                 switch (info.size) {
                     .Slice => {
                         var parsed = try self.arena.allocator().alloc(info.child, self.docs.items.len);
@@ -385,7 +385,7 @@ pub const Yaml = struct {
                     else => return error.TypeMismatch,
                 }
             },
-            .@"union" => return error.Unimplemented,
+            .Union => return error.Unimplemented,
             else => return error.TypeMismatch,
         }
     }
@@ -438,7 +438,7 @@ pub const Yaml = struct {
 
     fn parseOptional(self: *Yaml, comptime T: type, value: ?Value) Error!T {
         const unwrapped = value orelse return null;
-        const opt_info = @typeInfo(T).optional;
+        const opt_info = @typeInfo(T).Optional;
         return @as(T, try self.parseValue(opt_info.child, unwrapped));
     }
 
