@@ -1,5 +1,5 @@
 const std = @import("std");
-const SpecTest = @import("test/spec.zig");
+//const SpecTest = @import("test/spec.zig");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
